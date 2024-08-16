@@ -2,7 +2,14 @@ const db = require('../db/queries');
 
 module.exports = {
     usersGet: async (req, res) => {
-        const usernames = await db.getAllUsernames();
+        let usernames;
+        if (req.query.search) {
+            usernames = await db.searchUsername(req.query.search);
+        }
+        else {
+            usernames = await db.getAllUsernames();
+        }
+
         console.log("Usernames: ", usernames);
         res.send("Usernames: " + usernames.map(user => user.username).join(", "));
     },
@@ -14,4 +21,8 @@ module.exports = {
         await db.insertUsername(username);
         res.redirect("/");
     },
+    deleteAllGet: async (req, res) => {
+        await db.deleteAllUsernames();
+        res.redirect("/");
+    }
 }
